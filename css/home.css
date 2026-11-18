@@ -1,0 +1,42 @@
+.home{position:absolute;inset:0;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+
+/* header */
+.top{flex:none;padding:18px 22px 10px}
+.top b{font-family:Unbounded,sans-serif;font-size:15px;letter-spacing:.14em}
+.top p{color:var(--mut);font-size:13px;margin-top:4px}
+
+/* quick-jump chips */
+.chips{flex:none;position:relative;display:flex;gap:8px;overflow-x:auto;padding:4px 22px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;display:flex;align-items:center;gap:6px;height:38px;padding:0 12px;border-radius:19px;border:1px solid #ffffff1f;background:#ffffff08;font-size:13px;transition:background .3s,border-color .3s,box-shadow .3s}
+.chip em{display:none;font-style:normal;font-weight:600;white-space:nowrap}
+.chip.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 18%,transparent);box-shadow:0 0 18px color-mix(in srgb,var(--c) 30%,transparent)}
+.chip.on em{display:inline}
+
+/* swipe rail: the next card peeks in from the side */
+.rail{flex:1;min-height:0;display:flex;align-items:center;gap:14px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:0 calc((100vw - min(84vw,380px))/2)}
+.rail::-webkit-scrollbar{display:none}
+.card{flex:0 0 min(84vw,380px);scroll-snap-align:center;scroll-snap-stop:always;max-height:100%;display:flex}
+.cin{width:100%;padding:24px 20px;border-radius:30px 8px 30px 8px;border:1px solid color-mix(in srgb,var(--c) 50%,transparent);background:linear-gradient(160deg,color-mix(in srgb,var(--c) 20%,#05060d00),#05060dcc 60%);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 0 50px color-mix(in srgb,var(--c) 22%,transparent);transform:scale(.93);opacity:.55;transition:transform .4s,opacity .4s}
+.card.on .cin{transform:none;opacity:1}
+.ic{font-size:54px;filter:drop-shadow(0 0 18px var(--c))}
+.cin h2{font-family:Unbounded,sans-serif;font-weight:800;font-size:24px;margin-top:12px;line-height:1.1}
+.cin .tg{color:var(--mut);margin-top:8px;font-size:14px;line-height:1.5}
+.tp{list-style:none;margin-top:16px;display:grid;gap:8px;padding:0}
+.tp li{font-size:14px;padding:10px 12px;border-left:2px solid var(--c);background:#ffffff08;display:flex;justify-content:space-between;gap:8px}
+.tp em{font-style:normal;color:var(--c);font-size:11px;white-space:nowrap}
+.go{margin-top:18px;width:100%;padding:14px;border:0;border-radius:14px;background:var(--c);color:#05060d;font-family:Unbounded,sans-serif;font-weight:500;font-size:13px}
+
+/* one entrance moment after the loader: cards rise in, then the rail nudges */
+body.ready .card .cin{animation:cin .8s cubic-bezier(.2,.9,.2,1) calc(var(--k)*.09s + .25s) backwards}
+@keyframes cin{from{opacity:0;transform:translateY(40px) scale(.9)}}
+.rail.peek .card{animation:peek 1.3s ease 1.3s}
+@keyframes peek{0%,100%{transform:none}35%,55%{transform:translateX(-46px)}}
+
+/* footer: counter + swipe hint */
+.foot{flex:none;display:flex;align-items:center;justify-content:space-between;padding:10px 22px calc(22px + env(safe-area-inset-bottom))}
+.count{font-family:Unbounded,sans-serif;font-size:12px;color:var(--mut)}
+.count b{color:var(--a);font-weight:500}
+.hint{font-size:12px;color:var(--mut);letter-spacing:.06em;animation:hint 1.6s ease-in-out infinite;transition:opacity .5s}
+.hint.gone{opacity:0;animation:none}
+@keyframes hint{50%{transform:translateX(6px);color:var(--a)}}
