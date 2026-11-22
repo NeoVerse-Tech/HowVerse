@@ -4,43 +4,67 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#05060d">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="Howverse: learn how the future gets built. Swipe through fusion reactors, space elevators, nanobots and more, in live 3D.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
 <title>Howverse</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2305060d'/%3E%3Ccircle cx='32' cy='32' r='14' fill='none' stroke='%235df2ff' stroke-width='5'/%3E%3Ccircle cx='32' cy='32' r='5' fill='%23ffb84d'/%3E%3C/svg%3E">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800&family=Manrope:wght@400;600&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/loader.css">
 <link rel="stylesheet" href="css/home.css">
 <link rel="stylesheet" href="css/sector.css">
 <link rel="stylesheet" href="css/topic.css">
+
+<!-- If a script fails to load (offline, CDN down), say so on the loader instead of hanging at 0% -->
+<script>
+addEventListener('error',function(e){
+  var t=e.target;
+  if(t&&t.tagName==='SCRIPT'){
+    var m=document.getElementById('ldMsg');
+    if(m)m.textContent='Could not load '+String(t.src||'').split('/').pop()+'. Check your connection and refresh.';
+  }
+},true);
+</script>
 </head>
 <body class="booting">
-<canvas id="gl"></canvas>
+<canvas id="gl" aria-hidden="true"></canvas>
 <div id="app"></div>
 
+<noscript>Howverse needs JavaScript to run its live 3D models. Please turn it on and reload.</noscript>
+
 <!-- Loader is plain HTML so the animation starts the moment the page paints -->
-<div class="ld" id="ld">
+<div class="ld" id="ld" role="status" aria-live="polite">
   <h1 aria-label="Howverse">
     <span style="--i:0">H</span><span style="--i:1">O</span><span style="--i:2">W</span><span style="--i:3">V</span><span style="--i:4">E</span><span style="--i:5">R</span><span style="--i:6">S</span><span style="--i:7">E</span>
   </h1>
   <div class="st" id="ldMsg">Igniting the simulation</div>
   <div class="bar"><i id="ldBar"></i></div>
   <div class="pc" id="ldPc">0%</div>
-  <button class="skip" id="ldSkip">Tap to skip</button>
+  <button class="skip" id="ldSkip" type="button">Tap to skip</button>
 </div>
 
+<!-- Libraries -->
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/vue-router/4.3.0/vue-router.global.min.js"></script>
 
-<!-- Your files. Order matters: data, scene, loader, pages, app -->
+<!-- Core scripts. Order matters: data, scene, loader, pages, app.
+     Topics are NOT listed here. The topic loader fetches each one on demand
+     (js/topics/<sector>/<slug>/index.js), so this file never changes when a topic is added. -->
 <script defer src="js/data/sectors.js"></script>
 <script defer src="js/core/scene.js"></script>
 <script defer src="js/ui/loader.js"></script>
 <script defer src="js/ui/home.js"></script>
 <script defer src="js/ui/sector.js"></script>
 <script defer src="js/ui/topic.js"></script>
-<script defer src="js/topics/flight/spaceship.js"></script>
 <script defer src="js/app.js"></script>
 </body>
 </html>
