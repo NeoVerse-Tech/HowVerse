@@ -1,11 +1,23 @@
 .pg{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(20px + env(safe-area-inset-top)) 22px 60px}
 .bk{background:none;border:0;font-size:14px;padding:6px 0}
 .pg h1{font-family:Unbounded,sans-serif;font-weight:800;font-size:30px;margin-top:22px;color:var(--c)}
-.pg .tg{color:var(--mut);margin:10px 0 24px;line-height:1.5}
+.pg .tg{color:var(--mut);margin:10px 0 18px;line-height:1.5}
 .row{padding:16px;border:1px solid #ffffff1a;border-left:3px solid var(--c);border-radius:4px 18px 4px 18px;margin-bottom:12px;background:#ffffff06}
 .row h3{font-size:16px}
 .row p{color:var(--mut);font-size:13px;margin-top:4px}
 .row span{display:inline-block;margin-top:10px;font-size:11px;color:var(--c);border:1px solid var(--c);padding:3px 10px;border-radius:20px}
 .row.live{cursor:pointer;background:#ffffff0d}
 .row.live span{background:var(--c);color:#05060d}
-.more{margin-top:20px;text-align:center;color:var(--mut);font-size:13px}
+.more{margin-top:20px;text-align:center;color:var(--mut);font-size:13px;line-height:1.6}
+
+/* search bar: stays at the top while the list scrolls */
+.sq{position:sticky;top:0;z-index:5;margin:0 -22px 14px;padding:8px 22px 6px;background:linear-gradient(#05060dee 70%,#05060d00);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.sq-box{display:flex;align-items:center;gap:10px;height:46px;padding:0 6px 0 14px;border-radius:23px;border:1px solid #ffffff22;background:#ffffff0a;color:var(--mut);transition:border-color .25s,box-shadow .25s,background .25s}
+.sq-box:focus-within,.sq-box.on{border-color:var(--c);color:var(--c);background:color-mix(in srgb,var(--c) 8%,#ffffff06);box-shadow:0 0 20px color-mix(in srgb,var(--c) 22%,transparent)}
+.sq-ic{flex:none}
+.sq-box input{flex:1;min-width:0;height:100%;border:0;outline:0;background:none;color:var(--tx);font:inherit;font-size:16px;-webkit-appearance:none;appearance:none}
+.sq-box input::placeholder{color:var(--mut)}
+.sq-box input::-webkit-search-decoration,.sq-box input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+.sq-x{flex:none;width:34px;height:34px;border:0;border-radius:17px;background:#ffffff14;color:var(--tx);font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center}
+.sq-meta{margin-top:8px;padding-left:6px;font-size:12px;color:var(--mut);letter-spacing:.04em}
+.sq-reset{margin-top:10px;padding:8px 16px;border:1px solid var(--c);border-radius:18px;background:none;color:var(--c);font-size:12px}

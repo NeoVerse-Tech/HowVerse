@@ -17,15 +17,50 @@
 .rail{flex:1;min-height:0;display:flex;align-items:center;gap:14px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:0 calc((100vw - min(84vw,380px))/2)}
 .rail::-webkit-scrollbar{display:none}
 .card{flex:0 0 min(84vw,380px);scroll-snap-align:center;scroll-snap-stop:always;max-height:100%;display:flex}
-.cin{width:100%;padding:24px 20px;border-radius:30px 8px 30px 8px;border:1px solid color-mix(in srgb,var(--c) 50%,transparent);background:linear-gradient(160deg,color-mix(in srgb,var(--c) 20%,#05060d00),#05060dcc 60%);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 0 50px color-mix(in srgb,var(--c) 22%,transparent);transform:scale(.93);opacity:.55;transition:transform .4s,opacity .4s}
+.cin{width:100%;max-height:100%;overflow-y:auto;scrollbar-width:none;padding:20px 18px;border-radius:30px 8px 30px 8px;border:1px solid color-mix(in srgb,var(--c) 50%,transparent);background:linear-gradient(160deg,color-mix(in srgb,var(--c) 20%,#05060d00),#05060dcc 60%);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 0 50px color-mix(in srgb,var(--c) 22%,transparent);transform:scale(.93);opacity:.55;transition:transform .4s,opacity .4s}
+.cin::-webkit-scrollbar{display:none}
 .card.on .cin{transform:none;opacity:1}
-.ic{font-size:54px;filter:drop-shadow(0 0 18px var(--c))}
-.cin h2{font-family:Unbounded,sans-serif;font-weight:800;font-size:24px;margin-top:12px;line-height:1.1}
-.cin .tg{color:var(--mut);margin-top:8px;font-size:14px;line-height:1.5}
-.tp{list-style:none;margin-top:16px;display:grid;gap:8px;padding:0}
-.tp li{font-size:14px;padding:10px 12px;border-left:2px solid var(--c);background:#ffffff08;display:flex;justify-content:space-between;gap:8px}
-.tp em{font-style:normal;color:var(--c);font-size:11px;white-space:nowrap}
-.go{margin-top:18px;width:100%;padding:14px;border:0;border-radius:14px;background:var(--c);color:#05060d;font-family:Unbounded,sans-serif;font-weight:500;font-size:13px}
+.ic{font-size:44px;line-height:1;filter:drop-shadow(0 0 18px var(--c))}
+.cin h2{font-family:Unbounded,sans-serif;font-weight:800;font-size:22px;margin-top:10px;line-height:1.1}
+.cin .tg{color:var(--mut);margin-top:6px;font-size:13px;line-height:1.45}
+
+/* topic carousel: one featured topic, swaps every 3 s on the focused card */
+.hc-fx{position:relative;margin-top:14px;min-height:112px;border-radius:16px 6px 16px 6px;border:1px solid color-mix(in srgb,var(--c) 38%,transparent);background:color-mix(in srgb,var(--c) 9%,#ffffff06);overflow:hidden;cursor:pointer;touch-action:pan-x;user-select:none;-webkit-user-select:none;transition:border-color .3s,background .3s,box-shadow .3s}
+.hc-fx.held{border-color:var(--c);background:color-mix(in srgb,var(--c) 15%,#ffffff06);box-shadow:inset 0 0 24px color-mix(in srgb,var(--c) 22%,transparent)}
+.hc-fxi{padding:14px 14px 16px}
+.hc-fxt{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.hc-st{font-style:normal;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:10px;color:var(--mut);border:1px solid #ffffff22}
+.hc-st.lv{color:#05060d;background:var(--c);border-color:var(--c)}
+.hc-fxn{font-family:Unbounded,sans-serif;font-size:10px;color:var(--mut)}
+.hc-fxi h3{font-family:Unbounded,sans-serif;font-weight:600;font-size:18px;margin-top:10px;line-height:1.15}
+.hc-fxi p{color:var(--mut);font-size:13px;margin-top:4px;line-height:1.4}
+.hc-inv{display:inline-flex;gap:6px;align-items:center;margin-top:10px;font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--c)}
+.hc-inv b{font-weight:600;display:inline-block;animation:hc-nudge 1.6s ease-in-out infinite}
+@keyframes hc-nudge{50%{transform:translateX(5px)}}
+
+/* progress bar fills over 3 s, then the topic swaps */
+.hc-bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--c);transform-origin:left;transform:scaleX(0);opacity:.9}
+.hc-bar.run{animation:hc-fill 3s linear forwards}
+@keyframes hc-fill{to{transform:scaleX(1)}}
+
+/* swap: old topic slides up and fades, new one rises in */
+.hc-sw-enter-active,.hc-sw-leave-active{transition:opacity .22s ease,transform .22s ease}
+.hc-sw-enter-from{opacity:0;transform:translateY(14px)}
+.hc-sw-leave-to{opacity:0;transform:translateY(-14px)}
+
+/* dots */
+.hc-dots{display:flex;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.hc-dot{width:22px;height:26px;border:0;background:none;padding:0;display:flex;align-items:center;justify-content:center}
+.hc-dot i{display:block;width:6px;height:6px;border-radius:3px;background:#ffffff30;transition:width .3s,background .3s}
+.hc-dot.on i{width:20px;background:var(--c)}
+
+/* more ideas */
+.hc-ideas{margin-top:8px}
+.hc-ideas small{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+.hc-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.hc-chips span{font-size:11px;line-height:1;padding:6px 9px;border-radius:12px;border:1px dashed color-mix(in srgb,var(--c) 45%,transparent);color:color-mix(in srgb,var(--c) 70%,var(--tx));background:#ffffff06}
+
+.go{margin-top:16px;width:100%;padding:14px;border:0;border-radius:14px;background:var(--c);color:#05060d;font-family:Unbounded,sans-serif;font-weight:500;font-size:13px}
 
 /* one entrance moment after the loader: cards rise in, then the rail nudges */
 body.ready .card .cin{animation:cin .8s cubic-bezier(.2,.9,.2,1) calc(var(--k)*.09s + .25s) backwards}
