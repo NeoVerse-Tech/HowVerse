@@ -5,7 +5,30 @@ const G=HV.G,{ref,onMounted,onBeforeUnmount}=Vue;
 HV.topics=HV.topics||{};
 HV.slug=n=>n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 
-HV.Topic={
+/* Topic loader. A topic is a folder: js/topics/<sector id>/<slug>/index.js lists its files and the loader runs them in order.
+   A single-file topic at js/topics/<sector id>/<slug>.js still works. Resolves once the topic has registered itself. */
+HV._ld=HV._ld||{};HV.manifest=HV.manifest||{};HV.T=HV.T||{};
+HV._js=src=>new Promise((ok,no)=>{
+ const el=document.createElement('script');el.src=src;
+ el.onload=()=>ok(src);
+ el.onerror=()=>{el.remove();no(new Error('Could not load '+src))};
+ document.head.appendChild(el);
+});
+HV.load=(sec,slug)=>{
+ if(HV.topics[slug])return Promise.resolve();
+ if(HV._ld[slug])return HV._ld[slug];
+ const base='js/topics/'+sec+'/',idx=base+slug+'/index.js',flat=base+slug+'.js';
+ const files=()=>{
+  const m=HV.manifest[slug];
+  if(!m)throw new Error(idx+' loaded but did not set HV.manifest.'+slug+'.');
+  return m.reduce((q,f)=>q.then(()=>HV._js(base+slug+'/'+f)),Promise.resolve());
+ };
+ return HV._ld[slug]=HV._js(idx).then(files,()=>HV._js(flat).catch(()=>{throw new Error('Could not find the '+slug+' topic. Looked for '+idx+' and '+flat+'.')}))
+  .then(()=>{if(!HV.topics[slug])throw new Error('The '+slug+' files loaded but none registered HV.topics.'+slug+'.')})
+  .catch(e=>{delete HV._ld[slug];throw e});
+};
+
+const TopicView={
  template:`
 <div class="tpg" :style="{'--c':sec.c}">
  <header class="th"><button class="bk" @click="$router.push('/s/'+sec.id)">‹ {{sec.n}}</button><b>{{t?t.title:'Not found'}}</b></header>
@@ -40,13 +63,9 @@ HV.Topic={
    <button class="dh" @click="mini=!mini">{{mini?'▴ Show panel':'▾ Hide panel'}}</button>
    <div class="phase hid" :class="fl.k"><b>{{fl.n}}</b><p>{{fl.f}}</p></div>
    <div class="grid hid"><div v-for="r in fg"><em>{{r[0]}}</em><b>{{r[1]}}</b></div></div>
-   <label class="ex">Throttle <input type="range" min="0" max="100" :value="thr" @input="setThr($event.target.value)"><span class="pv">{{thr}}%</span></label>
+   <label class="ex">{{ui.label}} <input type="range" :min="ui.min" :max="ui.max" :value="thr" @input="setThr($event.target.value)"><span class="pv">{{thr}}%</span></label>
    <div class="fbt">
-    <button @click="doFlip">Flip</button>
-    <button @click="cut">Cut</button>
-    <button @click="cycleWarp">Warp {{WL[wi]}}</button>
-    <button :class="{on:auto}" @click="toggleAuto">Auto</button>
-    <button @click="resetFly">Reset</button>
+    <button v-for="b in ui.btns" :key="b.k" :class="{on:b.k==='auto'?auto:((b.k==='lamps'&&fs.state.lamp)||(b.on&&b.on()))}" @click="act(b.k)">{{b.k==='warp'?'Warp '+WL[wi]:(b.lf?b.lf():b.l)}}</button>
    </div>
   </div>
  </main>
@@ -58,9 +77,11 @@ HV.Topic={
   const r=VueRouter.useRoute(),sec=HV.sec(r.params.sector)||HV.SECTORS[0],t=HV.topics[r.params.slug];
   const tab=ref('learn'),ex=ref(0),sel=ref(null),u=ref(0),play=ref(false),spd=ref(1),rd=ref([]),st=ref(t?t.mission.at(0):{}),part=ref(null);
   const fs=t&&t.fly?t.fly.create():null;
+  /* a flight model may bring its own controls (ui, warp steps, max physics step); otherwise the spaceship controls are used */
+  const ui=fs&&fs.ui?fs.ui:{label:'Throttle',min:0,max:100,btns:[{k:'flip',l:'Flip'},{k:'cut',l:'Cut'},{k:'warp'},{k:'auto'},{k:'reset'}]};
   const tabs=['learn','world','launch'].concat(fs?['fly']:[]);
   const thr=ref(0),wi=ref(2),fl=ref({n:'',f:'',k:''}),fg=ref([]),auto=ref(false),mini=ref(false);
-  const WV=[1,60,3600,86400],WL=['1×','1 min/s','1 h/s','1 day/s'];
+  const WV=(fs&&fs.warp)||[1,60,3600,86400],WL=(fs&&fs.warpL)||['1×','1 min/s','1 h/s','1 day/s'];
   const C=HV.C,clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
   /* distance at which the whole ship fits across the screen width (phones are tall and narrow) */
   const fitD=()=>clamp(24/(1.155*(innerWidth/innerHeight)),18,60);
@@ -83,7 +104,8 @@ HV.Topic={
   const doFlip=()=>{if(!fs)return;fs.flip();thr.value=0;auto.value=false};
   const toggleAuto=()=>{if(!fs)return;fs.toggleAuto();auto.value=!!fs.state.auto;thr.value=Math.round(fs.state.th*100)};
   const cycleWarp=()=>{wi.value=(wi.value+1)%WV.length};
-  const resetFly=()=>{if(!fs)return;fs.reset();thr.value=0;auto.value=false;fg.value=fs.read();fl.value=fs.status()};
+  const act=k=>({flip:doFlip,cut:cut,warp:cycleWarp,auto:toggleAuto,reset:resetFly,drop:()=>fs.drop(),lamps:()=>fs.lamps(),evac:()=>fs.evac(),lock:()=>fs.lock(),damper:()=>fs.damper(),launch:()=>fs.launch(),repair:()=>fs.repair()})[k]();
+  const resetFly=()=>{if(!fs)return;fs.reset();thr.value=Math.round((fs.state.th||0)*100);auto.value=false;fg.value=fs.read();fl.value=fs.status()};
 
   /* how many pixels to slide the picture up so the ship sits in the free space between the header and the panel */
   function viewTarget(tb){
@@ -103,7 +125,7 @@ HV.Topic={
    if(tb==='fly'&&fs){
     /* run the flight model in small sim steps so fast time warp stays accurate */
     let left=dt*WV[wi.value],n=0;
-    while(left>1e-9&&fs.state.mode==='fly'&&n<400){const h=Math.min(left,120);fs.step(h);left-=h;n++}
+    while(left>1e-9&&fs.state.mode==='fly'&&n<400){const h=Math.min(left,fs.dtmax||120);fs.step(h);left-=h;n++}
     fs.tick(dt);
     if(fs.state.auto||fs.state.mode!=='fly')thr.value=Math.round(fs.state.th*100);
     auto.value=!!fs.state.auto;
@@ -134,7 +156,7 @@ HV.Topic={
    HV.setTint(sec.c);HV.rig.visible=false;G.phase='topic';
    grp=new THREE.Group();HV.S.add(grp);W=t.create(THREE,grp);HV.topicTick=tick;
    rd.value=t.mission.read(st.value);
-   if(fs){fg.value=fs.read();fl.value=fs.status()}
+   if(fs){thr.value=Math.round((fs.state.th||0)*100);fg.value=fs.read();fl.value=fs.status()}
   });
   onBeforeUnmount(()=>{
    HV.topicTick=null;G.phase='idle';
@@ -142,7 +164,18 @@ HV.Topic={
    C.clearViewOffset();
    C.position.set(0,0,HV.camZ());C.rotation.set(0,0,0);C.fov=60;C.updateProjectionMatrix();
   });
-  return{sec,t,tab,tabs,ex,sel,u,play,spd,rd,st,part,down,move,up,wheel,toggle,scrub,jump,thr,wi,fl,fg,auto,mini,WL,setThr,cut,doFlip,toggleAuto,cycleWarp,resetFly};
+  return{sec,t,tab,tabs,ex,sel,u,play,spd,rd,st,part,down,move,up,wheel,toggle,scrub,jump,thr,wi,fl,fg,auto,mini,WL,setThr,cut,doFlip,toggleAuto,cycleWarp,resetFly,fs,ui,act};
+ }
+};
+
+/* Wrapper: makes sure the topic is loaded before the topic page draws, so a direct link or refresh works too */
+HV.Topic={
+ components:{TopicView},
+ template:`<div style="display:contents"><TopicView v-if="ok" :key="key"/><main class="tb nf" v-else-if="err"><p>{{err}}</p></main><main class="tb nf" v-else><p>Loading…</p></main></div>`,
+ setup(){
+  const r=VueRouter.useRoute(),ok=ref(false),err=ref(''),key=r.params.sector+'/'+r.params.slug;
+  HV.load(r.params.sector,r.params.slug).then(()=>{ok.value=true}).catch(e=>{err.value=e.message});
+  return{ok,err,key};
  }
 };
 })();

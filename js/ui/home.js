@@ -1,8 +1,11 @@
-/* Home screen: swipe sideways through sectors. Chips jump, cards peek, counter shows where you are. */
+/* Home screen: swipe sideways through sectors. Chips jump, cards peek, counter shows where you are.
+   The card in focus runs a topic carousel (3 s). Hold to pause, tap a dot to jump, tap the panel to open. */
 (function(){
 const HV=window.HV=window.HV||{};
 const G=HV.G;
 const {ref,onMounted,onBeforeUnmount}=Vue;
+
+const DELAY=3000;
 
 HV.Home={
  template:`
@@ -21,8 +24,34 @@ HV.Home={
     <div class="ic">{{s.i}}</div>
     <h2>{{s.n}}</h2>
     <p class="tg">{{s.t}}</p>
-    <ul class="tp"><li v-for="x in s.tp.slice(0,3)"><span>{{x[0]}}</span><em>{{live(x)?'Live':'Coming soon'}}</em></li></ul>
-    <button class="go" @click="$router.push('/s/'+s.id)">Open sector</button>
+
+    <div class="hc-fx" :class="{held:paused&&k===idx}"
+     @pointerdown="hold" @pointerup="release" @pointercancel="release" @pointerleave="release"
+     @click="openSector(s)">
+     <transition name="hc-sw" mode="out-in">
+      <div class="hc-fxi" :key="pos[k]">
+       <div class="hc-fxt">
+        <em class="hc-st" :class="{lv:live(cur(s,k))}">{{live(cur(s,k))?'Live':'Coming soon'}}</em>
+        <span class="hc-fxn">{{pos[k]+1}} / {{s.tp.length}}</span>
+       </div>
+       <h3>{{cur(s,k)[0]}}</h3>
+       <p>{{cur(s,k)[1]}}</p>
+       <span class="hc-inv">{{live(cur(s,k))?'Ready to explore':'In the works'}} <b>&rarr;</b></span>
+      </div>
+     </transition>
+     <i v-if="k===idx" class="hc-bar" :key="tick" :class="{run:!paused}"></i>
+    </div>
+
+    <div class="hc-dots">
+     <button v-for="(x,j) in s.tp" :key="j" class="hc-dot" :class="{on:j===pos[k]}" :aria-label="x[0]" @click.stop="setPos(k,j)"><i></i></button>
+    </div>
+
+    <div class="hc-ideas" v-if="s.ideas&&s.ideas.length">
+     <small>More ideas</small>
+     <div class="hc-chips"><span v-for="i in s.ideas.slice(0,6)">{{i}}</span></div>
+    </div>
+
+    <button class="go" @click="openSector(s)">Open sector</button>
    </div>
   </section>
  </div>
@@ -35,7 +64,35 @@ HV.Home={
 
  setup(){
   const S=HV.SECTORS,rail=ref(null),chips=ref(null),idx=ref(0),touched=ref(false);
-  const pad=n=>String(n).padStart(2,'0'),live=x=>!!HV.topics[HV.slug(x[0])];
+  const pos=ref(S.map(()=>0)),paused=ref(false),tick=ref(0);
+  const pad=n=>String(n).padStart(2,'0'),live=HV.isLive;
+  const reduced=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const router=VueRouter.useRouter();
+
+  let timer=0,holdAt=0;
+
+  const cur=(s,k)=>s.tp[pos.value[k]]||s.tp[0];
+
+  /* carousel: one timer, only for the card in focus */
+  function schedule(){
+   clearTimeout(timer);tick.value++;
+   if(reduced||paused.value||document.hidden)return;
+   timer=setTimeout(advance,DELAY);
+  }
+  function advance(){
+   const k=idx.value,n=S[k].tp.length;
+   if(n>1)pos.value[k]=(pos.value[k]+1)%n;
+   schedule();
+  }
+  function setPos(k,j){pos.value[k]=j;schedule()}
+  function hold(){holdAt=Date.now();paused.value=true;clearTimeout(timer)}
+  function release(){if(!paused.value)return;paused.value=false;schedule()}
+  const vis=()=>{document.hidden?clearTimeout(timer):schedule()};
+
+  function openSector(s){
+   if(holdAt&&Date.now()-holdAt>350){holdAt=0;return}  /* a long press was a pause, not a tap */
+   router.push('/s/'+s.id);
+  }
 
   const step=()=>{
    const c=rail.value.children[0];
@@ -53,6 +110,7 @@ HV.Home={
   function select(k){
    idx.value=k;HV.setTint(S[k].c);centerChip(k);
    navigator.vibrate&&navigator.vibrate(8);
+   schedule();                                          /* new card starts a fresh 3 s */
   }
 
   function onScroll(){
@@ -72,10 +130,17 @@ HV.Home={
    setTimeout(()=>centerChip(k),50);
    if(document.body.classList.contains('ready'))intro();
    else document.addEventListener('hv:ready',intro,{once:true});
+   document.addEventListener('visibilitychange',vis);
+   schedule();
   });
-  onBeforeUnmount(()=>{sessionStorage.setItem('hv_i',idx.value);document.removeEventListener('hv:ready',intro)});
+  onBeforeUnmount(()=>{
+   clearTimeout(timer);
+   sessionStorage.setItem('hv_i',idx.value);
+   document.removeEventListener('hv:ready',intro);
+   document.removeEventListener('visibilitychange',vis);
+  });
 
-  return{S,rail,chips,idx,touched,pad,live,onScroll,goTo,touch};
+  return{S,rail,chips,idx,touched,pos,paused,tick,pad,live,cur,onScroll,goTo,touch,setPos,hold,release,openSector};
  }
 };
 })();
