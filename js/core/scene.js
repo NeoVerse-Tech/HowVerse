@@ -58,6 +58,9 @@ function frame(now){
  const dt=Math.min((now-last)/1000,.05);last=now;const t=now/1000;
  const a=pg.attributes.position.array;
 
+ /* a mounted topic wins over the intro loader, so a direct link or a return visit always lands on the model */
+ if(HV.topicTick&&G.phase!=='topic'){G.phase='topic';rig.visible=false;C.position.z=camZ()}
+
  if(G.phase==='load'){
   /* galaxy spiral collapses into a sphere while the loader runs */
   const e=ease(Math.min(G.p,1)),spin=t*(.4+e*1.8);
