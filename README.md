@@ -70,6 +70,7 @@ That makes 31 topics in total. Each sector has its own colour, which tints the s
 - **Deployable tower** (Megastructures), the first structure topic, where the physics is loads, buckling and wind. It has all four tabs.
 - **Graphene** (Materials and Nano), a nanoindentation test that breaks a one-atom-thick drum with a diamond tip. It has all four tabs.
 - **Metamaterials** (Materials and Nano), a prism of copper rings and wires that bends a beam the wrong way. It has all four tabs.
+- **Orbital data center** (Computing and AI), a megawatt-class compute satellite in a dawn-dusk orbit, where cooling rather than power is the limit. It has all four tabs.
 - The home carousel with its "More ideas" row, and the search bar on the sector page.
 
 **Coming soon**
@@ -317,6 +318,48 @@ Every number on screen comes from `core.js`: a Drude curve for the wires, a Lore
 
 ---
 
+## The Orbital data center topic
+
+A compute satellite in a dawn-dusk sun-synchronous orbit at 650 km. That orbit stays in sunlight nearly all year, so the node needs almost no battery, and the real limit is heat: in vacuum the only way to get rid of it is to radiate it. Small GPU satellites in orbit are BUILT. A megawatt-class node like this one is PROPOSED. Gigawatt clusters are THEORETICAL. The design values are chosen to fit together in the spirit of published concepts, and are not a copy of any company's design.
+
+**Reference design (PROPOSED)**
+
+| | |
+|---|---|
+| Orbit | 650 km, 98° inclination, 97.6 min per lap, about 14.8 laps a day |
+| Compute | 700 accelerators at 1 kW each, 693 PFLOP/s peak, 740 kW with housekeeping |
+| Array | two sun-tracking wings, 2,800 m², about 0.92 MW on a sunny day |
+| Radiators | 850 m² of flat two-sided fins kept edge-on to the Sun, about 45 °C at full load |
+| Chips | about 80 °C at the junction at full load, against an 85 °C limit |
+| Shield | 5 mm aluminium-equivalent vault around the compute, a 15 krad budget |
+| Mass | about 29 t |
+| Links | laser terminals 10 cm across: 8 Tb/s to a neighbour 200 m away, 100 Gb/s to the ground |
+| Shadow | up to about 20 min a lap in the shadow season, sunlit about 96% of the year |
+
+Every number on screen comes from `core.js`: solar flux and cell efficiency that falls as the cells warm, the Stefan-Boltzmann law for radiator area with Earth heat and reflected sunlight added, one lumped thermal mass, orbit period and eclipse from the Sun angle through the year, a fixed radiation dose curve, bit-flip rates and job restarts with Young-Daly checkpointing, laser link budgets, ground pass geometry, drag, mass and launch cost.
+
+**Learn tab:** 14 sections, ending in an honest list of what the model leaves out. Facts about real missions are as reported by late November 2026.
+
+**World tab:** nine parts: solar array, radiators, compute, radiation shield, power electronics, thermal loop, laser links, bus and orbit. The Earth is generated in code. The node is drawn about ten thousand times too large against it, with the true ratio of Earth's radius to the orbit's. The Sun direction and the Earth's shadow follow the real geometry, the wings turn to face the Sun and the fins stay edge-on. The radiators glow with temperature and the racks with load. In World and Learn the season is sped up so the shadow season can be seen arriving.
+
+**Launch tab:** one mission in 9 phases over about 8 hours: launch, release and sun lock, unfold, power up, compute load, laser link, ground pass, particle storm, shadow season. The last phase jumps six months ahead. Eight readouts stay on screen (time, altitude, Sun angle, array power, power draw, radiators, chip junction, compute) and two change with the phase. The radiator temperature and battery charge are stepped through the whole mission once at load, so the lag behind the load is real and scrubbing back and forth never disagrees.
+
+**Fly tab:** you manage the node through 24 hours of the shadow season.
+- **Load.** The slider sets the compute load. Compute stops by itself in shadow, because the array makes nothing and the battery only carries housekeeping.
+- **Heat.** The radiators and chips follow the load with a lag. At the chip limit of 85 °C the node trips and shuts the compute down. It restarts only when the chips, at the load you ask for, are 12 K under the limit, so a lower load restarts sooner. A live Safe load gauge shows what the radiators can carry.
+- **The radiator hit.** After 3.5 hours a micrometeoroid cuts a fin and 30% of the radiator area is gone. Full load now overheats. One fin shortens on screen.
+- **The storm.** From hour 8 to hour 11 a particle storm makes restarts about 30 times as common.
+- **Checkpoint.** Cycles 30, 60, 150, 300 and 900 seconds. Short intervals lose less work per restart but cost more time. The best choice is near 900 s in quiet and near 150 s in the storm.
+- **Downlink.** Results only count once they are sent. Seven ground passes of about 9 minutes each fall at fixed times. Press Downlink during a pass to send the buffer at 100 Gb/s. The buffer holds 12 TB, and compute pauses when it is full.
+- **Idle.** Drops the load to zero.
+- **Time warp.** 1x, 1 min/s, 10 min/s and 30 min/s. It starts at 10 min/s, so a day takes about 2.5 minutes.
+- **Auto.** Flies the reference plan once so you can see the right answer: it holds the safe load, shortens checkpoints in the storm and opens every downlink.
+- **The goal.** Send 28 TB of results to the ground in 24 hours. Auto reaches about 30 TB. Full load all day ends in repeated trips, and a steady 75% load with no tuning falls short.
+
+**What the Fly model simplifies:** restarts are a smooth average rather than random events, the passes are on a fixed schedule, the results are one fixed amount per unit of compute, and the radiator environment is the orbit average. The Learn tab says so.
+
+---
+
 ## Project structure
 
 Howverse is plain HTML, CSS and JavaScript with no build step. It runs on any static host. Vue 3, Vue Router and three.js load from a CDN.
@@ -344,6 +387,7 @@ js/
     mega/deployable-tower/
     nano/graphene/
     nano/metamaterials/
+    mind/orbital-data-center/
     energy/fusion-reactor/
       index.js          the manifest: the list of files, in load order
       core.js           shared constants and helpers
@@ -355,7 +399,7 @@ js/
       register.js       registers the topic, loaded last
 ```
 
-Nanobots, Deployable tower, Graphene and Metamaterials use the same multi-file layout as Fusion reactor. One 3D renderer stays alive across all pages. This keeps the app light, which matters because it is built and used on phones.
+Nanobots, Deployable tower, Graphene, Metamaterials and Orbital data center use the same multi-file layout as Fusion reactor. One 3D renderer stays alive across all pages. This keeps the app light, which matters because it is built and used on phones.
 
 ---
 
@@ -414,6 +458,7 @@ Upload the whole folder to a static host such as Vercel. The app loads its libra
 6. ~~Build **Deployable tower** (Megastructures): a tall structure that telescopes itself down and opens up again. It is the first structure topic, where the physics is loads, buckling and wind rather than fuel or flow.~~ Done.
 7. ~~Add the home carousel, the "More ideas" row and the sector search bar.~~ Done.
 8. ~~Build the Materials and Nano sector: **Graphene** and **Metamaterials**.~~ Done.
+8a. ~~Build **Orbital data center**, the first Computing and AI topic.~~ Done.
 9. Build **Rocket and capsule**, and move the code the topics share (formatters, the 3D scaffolding) into one place.
 10. Build one flagship topic per sector, so all eleven feel alive.
 11. Fill in the remaining topics.
