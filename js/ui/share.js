@@ -27,7 +27,8 @@ const CSS=[
  '.hvs button{border:1.5px solid rgba(255,255,255,.65);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:13px 20px;font:700 14px/1 system-ui,sans-serif;touch-action:manipulation}',
  '.hvs button.pri{background:#fff;color:#000}'
 ].join('');
-let st=null;function css(){if(st)return;st=document.createElement('style');st.textContent=CSS;document.head.appendChild(st)}
+let st=null;function css(){if(st||!document.head)return;st=document.createElement('style');st.id='hv-share-css';st.textContent=CSS;document.head.appendChild(st)}
+css();document.addEventListener('DOMContentLoaded',css);
 
 const ICON={
  share:'<svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6"/></svg>',
@@ -41,7 +42,7 @@ function toast(m){
  if(!n){n=document.createElement('div');n.id='hvt';document.body.appendChild(n)}
  n.textContent=m;n.style.display='block';clearTimeout(tT);tT=setTimeout(()=>{n.style.display='none'},2600);
 }
-const base=()=>location.href.split('#')[0];
+const base=()=>location.origin;
 function copy(u){
  try{return navigator.clipboard.writeText(u).then(()=>toast('Link copied'),()=>toast(u))}catch(e){toast(u)}
  return Promise.resolve();
@@ -52,14 +53,12 @@ function send(d){
 }
 
 /* ---------- links ---------- */
-const linkSector=id=>base()+'#/s/'+id;
+const linkSector=id=>base()+'/'+id;
 function linkView(){
  const v=HV.view;if(!v)return base();
- const g=v.get(),o={tab:g.tab};
- if(g.tab==='world'){if(g.part)o.part=g.part;if(g.ex>0)o.ex=g.ex}
- if(g.tab==='launch')o.u=g.u;
- o.cam=g.cam;
- return base()+'#/s/'+v.sec+'/'+v.slug+'?'+new URLSearchParams(o).toString();
+ const g=v.get(),k=g.tab;
+ const s=k==='world'?['world',g.part||'-',g.ex,g.cam]:k==='launch'?['launch',g.u,g.cam]:[k,g.cam];
+ return base()+'/'+v.sec+'/'+v.slug+'?v='+s.join('.').replace(/,/g,'.');
 }
 function sector(s){
  send({title:s.n+' · Howverse',text:s.n+' on Howverse: '+s.t,url:linkSector(s.id)});
@@ -190,6 +189,6 @@ function sharePic(){
  else{save();copy(shot.link)}
 }
 
-addEventListener('hashchange',()=>{if(ph)closePhoto(true)});
+addEventListener('popstate',()=>{if(ph)closePhoto(true)});
 HV.share={enter,leave,sector,topic,link:linkView,toast};
 })();

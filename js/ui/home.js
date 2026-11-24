@@ -106,7 +106,7 @@ HV.Home={
 
   function openSector(s){
    if(holdAt&&Date.now()-holdAt>350){holdAt=0;return}  /* a long press was a pause, not a tap */
-   router.push('/s/'+s.id);
+   router.push('/'+s.id);
   }
 
   const step=()=>{

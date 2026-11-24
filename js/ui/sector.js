@@ -45,7 +45,7 @@ HV.Sector={
   const open=x=>{
    if(!live(x)||busy.value)return;
    const sl=HV.slug(x[0]);busy.value=sl;err.value='';
-   HV.load(s.value.id,sl).then(()=>{busy.value='';rt.push('/s/'+s.value.id+'/'+sl)}).catch(e=>{busy.value='';err.value=e.message});
+   HV.load(s.value.id,sl).then(()=>{busy.value='';rt.push('/'+s.value.id+'/'+sl)}).catch(e=>{busy.value='';err.value=e.message});
   };
   return{s,live,open,busy,err,HV,q,list};
  }

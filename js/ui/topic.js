@@ -31,7 +31,7 @@ HV.load=(sec,slug)=>{
 const TopicView={
  template:`
 <div class="tpg" :style="{'--c':sec.c}">
- <header class="th"><button class="bk" @click="$router.push('/s/'+sec.id)">‹ {{sec.n}}</button><b>{{t?t.title:'Not found'}}</b></header>
+ <header class="th"><button class="bk" @click="$router.push('/'+sec.id)">‹ {{sec.n}}</button><b>{{t?t.title:'Not found'}}</b></header>
  <main class="tb" v-if="t">
   <div class="learn" v-if="tab==='learn'">
    <div class="hero"><h1>{{t.title}}</h1><p>{{t.hook}}</p>
@@ -88,8 +88,12 @@ const TopicView={
   let W=null,grp=null,yaw=.6,pit=.2,dist=fitD(),cur=dist,fr=0,fov=60,vt=0,vo=0,vOn=false;const ptr=new Map();
 
   /* a shared link carries the tab, selected part, pull-apart, launch position and camera. Anything missing or invalid is ignored. */
-  const q=r.query||{},num=v=>v!=null&&v!==''&&isFinite(v)?Number(v):null,photo=ref(false);let spin=false;
-  const shared=!!(t&&(q.tab||q.part||q.cam||q.ex||q.u));
+  /* ?v=world.array.40.62.20.240 (tab, part, pull-apart, camera) or ?v=launch.731.62.20.240 (tab, position, camera). The older ?tab=&part= form still works. */
+  const q0=r.query||{},V=String(q0.v||'').split('.'),q=Object.assign({},q0);
+  if(q0.v){q.tab=V[0];const c=V[0]==='world'?V.slice(3,6):V[0]==='launch'?V.slice(2,5):V.slice(1,4);
+   if(V[0]==='world'){q.part=V[1]==='-'?'':V[1];q.ex=V[2]}if(V[0]==='launch')q.u=V[1];if(c.length===3)q.cam=c.join(',')}
+  const num=v=>v!=null&&v!==''&&isFinite(v)?Number(v):null,photo=ref(false);let spin=false;
+  const shared=!!(t&&(q0.v||q.tab||q.part||q.cam||q.ex||q.u));
   if(t){
    if(tabs.indexOf(q.tab)>=0)tab.value=q.tab;
    if(t.parts.some(p=>p.id===q.part))sel.value=q.part;
