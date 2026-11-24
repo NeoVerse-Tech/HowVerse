@@ -2,12 +2,15 @@
 (function(){
 const HV=window.HV;
 
+/* old links like /#/s/mind/orbital-data-center become /mind/orbital-data-center before the router starts */
+if(location.hash.indexOf('#/')===0)history.replaceState(null,'',location.hash.slice(1).replace(/^\/s\//,'/'));
+
 const router=VueRouter.createRouter({
- history:VueRouter.createWebHashHistory(),
+ history:VueRouter.createWebHistory(),
  routes:[
   {path:'/',component:HV.Home},
-  {path:'/s/:id',component:HV.Sector,beforeEnter:to=>HV.sec(to.params.id)?true:'/'},
-  {path:'/s/:sector/:slug',component:HV.Topic,beforeEnter:to=>HV.sec(to.params.sector)?true:'/'},
+  {path:'/:id([a-z0-9-]+)',component:HV.Sector,beforeEnter:to=>HV.sec(to.params.id)?true:'/'},
+  {path:'/:sector([a-z0-9-]+)/:slug([a-z0-9-]+)',component:HV.Topic,beforeEnter:to=>HV.sec(to.params.sector)?true:'/'},
   {path:'/:rest(.*)',redirect:'/'}
  ]
 });
