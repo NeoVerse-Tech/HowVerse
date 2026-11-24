@@ -36,6 +36,16 @@ const glow=new THREE.Mesh(new THREE.SphereGeometry(.7,16,16),new THREE.MeshBasic
 
 const camZ=()=>innerWidth<innerHeight?11:9;
 HV.S=S;HV.C=C;HV.rig=rig;HV.camZ=camZ;
+/* photo: draw one frame at higher resolution into a plain 2D canvas, then put the renderer back. Called by share.js. Reading the picture in the same step as the render is what makes it reliable. */
+HV.snap=function(q){
+ if(!R)return null;
+ const w=innerWidth,h=innerHeight,pr=R.getPixelRatio();let np=Math.min(3,pr*(q||1.5));
+ while(np>pr&&w*h*np*np>12e6)np-=.25;
+ R.setPixelRatio(np);R.setSize(w,h,false);R.render(S,C);
+ const o=document.createElement('canvas');o.width=cv.width;o.height=cv.height;o.getContext('2d').drawImage(cv,0,0);
+ R.setPixelRatio(pr);R.setSize(w,h,false);
+ return o;
+};
 function fit(){if(!R)return;R.setSize(innerWidth,innerHeight,false);C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix();C.position.z=camZ()}
 addEventListener('resize',fit);fit();
 
