@@ -25,7 +25,13 @@ const CSS=[
  '.hvs img{max-width:100%;max-height:68vh;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.6)}',
  '.hvs div{display:flex;gap:12px}',
  '.hvs button{border:1.5px solid rgba(255,255,255,.65);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:13px 20px;font:700 14px/1 system-ui,sans-serif;touch-action:manipulation}',
- '.hvs button.pri{background:#fff;color:#000}'
+ '.hvs button.pri{background:#fff;color:#000}',
+ /* layout guard: long readout text (for example the last phase of a launch) must wrap, never push the panel wider than the screen */
+ 'html,body{overflow-x:hidden}',
+ '.tpg,.tpg .tb{max-width:100vw;box-sizing:border-box}',
+ '.tpg .dock{max-width:100vw;min-width:0;box-sizing:border-box;overflow-x:hidden}',
+ '.tpg .dock .phase,.tpg .dock .phase p,.tpg .dock .grid>div,.tpg .dock .info,.tpg .dock .info p{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}',
+ '@media(max-width:700px){.tpg .dock .grid{grid-template-columns:repeat(3,minmax(0,1fr))}}'
 ].join('');
 let st=null;function css(){if(st||!document.head)return;st=document.createElement('style');st.id='hv-share-css';st.textContent=CSS;document.head.appendChild(st)}
 css();document.addEventListener('DOMContentLoaded',css);
