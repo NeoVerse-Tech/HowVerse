@@ -30,7 +30,7 @@ HV.SECTORS=[
 ];
 
 /* topics that have a built file; they open from the sector page and load on demand */
-HV.BUILT=['spaceship','nanobots','fusion-reactor','deployable-tower','dyson-swarm','graphene','metamaterials'];
+HV.BUILT=['spaceship','nanobots','fusion-reactor','deployable-tower','dyson-swarm','graphene','metamaterials','orbital-data-center'];
 
 /* the one rule for 'is this topic built'. Home, sector page and loader all use it. */
 HV.isLive=x=>HV.BUILT.indexOf(x[0].toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''))>=0;
