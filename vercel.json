@@ -1,0 +1,16 @@
+{
+ "functions": {
+  "api/page.js": {"includeFiles": "{app.html,index.html,js/data/sectors.js}"},
+  "api/sitemap.js": {"includeFiles": "js/data/sectors.js"}
+ },
+ "rewrites": [
+  {"source": "/sitemap.xml", "destination": "/api/sitemap"},
+  {"source": "/robots.txt", "destination": "/api/robots"},
+  {"source": "/", "destination": "/api/page"},
+  {"source": "/:sector([a-z0-9-]+)/:slug([a-z0-9-]+)", "destination": "/api/page?sector=:sector&slug=:slug"},
+  {"source": "/:id([a-z0-9-]+)", "destination": "/api/page?id=:id"}
+ ],
+ "headers": [
+  {"source": "/brand/(.*)", "headers": [{"key": "Cache-Control", "value": "public, max-age=86400"}]}
+ ]
+}
