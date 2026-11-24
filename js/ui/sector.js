@@ -11,6 +11,7 @@ HV.Sector={
  <div class="ic" style="margin-top:18px;font-size:46px">{{s.i}}</div>
  <h1>{{s.n}}</h1>
  <p class="tg">{{s.t}}</p>
+ <button class="hv-pill" @click="HV.share.sector(s)">Share this sector</button>
 
  <div class="sq">
   <div class="sq-box" :class="{on:q}">

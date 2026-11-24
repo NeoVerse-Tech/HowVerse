@@ -7,6 +7,21 @@ const {ref,onMounted,onBeforeUnmount}=Vue;
 
 const DELAY=3000;
 
+/* the card order is shuffled once per visit, and kept while the tab stays open so swiping back and forth feels steady.
+   It never opens on the same first card as the visit before. */
+function order(){
+ const all=HV.SECTORS;let ids=null;
+ try{ids=JSON.parse(sessionStorage.getItem('hv_o')||'null')}catch(e){}
+ if(!Array.isArray(ids)||ids.length!==all.length||!all.every(s=>ids.indexOf(s.id)>=0)){
+  ids=all.map(s=>s.id);
+  for(let i=ids.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]]}
+  let last='';try{last=localStorage.getItem('hv_f')||''}catch(e){}
+  if(ids.length>1&&ids[0]===last){const j=1+Math.floor(Math.random()*(ids.length-1));[ids[0],ids[j]]=[ids[j],ids[0]]}
+  try{sessionStorage.setItem('hv_o',JSON.stringify(ids));localStorage.setItem('hv_f',ids[0])}catch(e){}
+ }
+ return ids.map(id=>all.find(s=>s.id===id));
+}
+
 HV.Home={
  template:`
 <div class="home">
@@ -63,7 +78,7 @@ HV.Home={
 </div>`,
 
  setup(){
-  const S=HV.SECTORS,rail=ref(null),chips=ref(null),idx=ref(0),touched=ref(false);
+  const S=order(),rail=ref(null),chips=ref(null),idx=ref(0),touched=ref(false);
   const pos=ref(S.map(()=>0)),paused=ref(false),tick=ref(0);
   const pad=n=>String(n).padStart(2,'0'),live=HV.isLive;
   const reduced=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
