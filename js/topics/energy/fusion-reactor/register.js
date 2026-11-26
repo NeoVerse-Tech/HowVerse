@@ -1,5 +1,5 @@
 /* Fusion reactor · registers the topic. Loaded last.
-   Phase 1: learn, parts, world and mission use safe placeholders until their phases arrive. */
+   All four tabs are wired: learn, parts (World), create (World), mission (Launch) and fly (Fly). */
 (function(){
 const HV=window.HV,T=HV.T.fusion;
 HV.topics=HV.topics||{};
@@ -12,9 +12,15 @@ function holdCreate(THREE,root){
  return{update(dt){me.rotation.z+=dt*.25},dispose(){g.dispose();m.dispose()}};
 }
 
+/* Fly tab. The factory gives a fresh flight model on each call. It also carries one model's
+   members (ui, warp, step, view and so on), so it works whether the page calls it or reads it directly. */
+const flyFactory=T.createFly?Object.assign(()=>T.createFly(),T.createFly()):undefined;
+if(flyFactory)flyFactory.create=()=>T.createFly();
+
 HV.topics['fusion-reactor']={slug:'fusion-reactor',title:'Fusion reactor',
  hook:'A star in a magnetic bottle. Heat hydrogen past 100 million degrees and hold it with magnets.',
  stats:[[T.fmtP(T.Pfus),'fusion power'],['Q = '+T.Q.toFixed(0),'power gain'],[T.fmtK(T.TopK),'plasma heat']],
  learn:T.LEARN||[],parts:T.PARTS||[],create:T.create||holdCreate,
- mission:{at:T.at||(()=>({})),read:T.read||(()=>[]),phases:T.P?T.P.map(p=>({n:p.n,w:p.w})):[]}};
+ mission:{at:T.at||(()=>({})),read:T.read||(()=>[]),phases:T.P?T.P.map(p=>({n:p.n,w:p.w})):[]},
+ fly:flyFactory};
 })();

@@ -63,7 +63,7 @@ function createFly(){
    S.dis=Math.max(0,S.dis-h/3);
    if(S.dens>1.02){disrupt('density');break}
    if(S.bn>BNLIM){disrupt('beta');break}
-   if(S.Pf>=PF_GOAL&&(Pw<1e5||S.Pf/Pw>=Q_GOAL))S.burn+=h;
+   if(S.Pf>=PF_GOAL&&(Pw<1e5||S.Pf/Pw>=Q_GOAL-.05))S.burn+=h;      /* 0.05 of slack: the design point itself sits at Q of 9.99 to 10.0 */
    if(S.burn>=BURN_GOAL){S.mode='done';S.auto=0;break}
    if(S.t>=PULSE){S.mode='flux';S.auto=0;break}
   }
@@ -109,14 +109,19 @@ function createFly(){
   if(S.Pf<PF_GOAL)return{k:'',n:'H-mode, still climbing',f:'Fusion is '+fmtP(S.Pf)+' and the goal is '+fmtP(PF_GOAL)+' at Q of 10. Fusion grows with the square of the density, so raise the fuel in small steps while the temperature holds.'};
   return{k:'warn',n:'Q is too low',f:'Fusion power is high but Q is '+(Pw>1e5?(S.Pf/Pw).toFixed(1):'high')+'. Cut the heating until Q passes 10; the alphas will keep the plasma hot.'};
  }
+ /* Fuel + and Fuel − ride on the page's existing drop and lamps keys, which call fs.drop() and fs.lamps(),
+    so ui/topic.js needs no change. (The page's cut key sets the heating slider to zero, so it is not used.) */
+ function lbl(k){return k==='fup'||k==='drop'?'Fuel + '+LEV[Math.min(S.fi+1,LEV.length-1)].toFixed(2):k==='fdn'||k==='lamps'?'Fuel − '+LEV[Math.max(S.fi-1,0)].toFixed(2):null}
+ function act(k){if(S.mode!=='fly')return;S.auto=0;S.am='';if(k==='fup'||k==='drop')S.fi=Math.min(S.fi+1,LEV.length-1);else if(k==='fdn'||k==='lamps')S.fi=Math.max(S.fi-1,0)}
  return{
   state:S,step,tick,view,read:readout,status,reset,
-  ui:{label:'Heating',min:0,max:100,unit:'%',btns:[{k:'fup',l:'Fuel +'},{k:'fdn',l:'Fuel −'},{k:'warp'},{k:'auto'},{k:'reset'}]},
-  warp:[1,10,60,600],warpL:['1×','10×','1 min/s','10 min/s'],warp0:1,dtmax:.05,
-  label:k=>k==='fup'?'Fuel + '+LEV[Math.min(S.fi+1,LEV.length-1)].toFixed(2):k==='fdn'?'Fuel − '+LEV[Math.max(S.fi-1,0)].toFixed(2):null,
+  ui:{label:'Heating',min:0,max:100,unit:'%',btns:[{k:'drop',l:'Fuel +',lf:()=>lbl('fup'),on:()=>false},{k:'lamps',l:'Fuel −',lf:()=>lbl('fdn'),on:()=>false},{k:'warp'},{k:'auto'},{k:'reset'}]},
+  warp:[60,600,1,10],warpL:['1 min/s','10 min/s','1×','10×'],   /* the page starts on index 2, so the run starts at 1× and the buttons cycle 1×, 10×, 1 min/s, 10 min/s */
+  dtmax:.05,
+  label:lbl,
   on:k=>false,
   setThrottle(x){S.th=clamp(x,0,1);S.auto=0;S.am=''},
-  act(k){if(S.mode!=='fly')return;S.auto=0;S.am='';if(k==='fup')S.fi=Math.min(S.fi+1,LEV.length-1);else if(k==='fdn')S.fi=Math.max(S.fi-1,0)},
+  act,drop:()=>act('fup'),lamps:()=>act('fdn'),fup:()=>act('fup'),fdn:()=>act('fdn'),
   toggleAuto(){if(S.auto){S.auto=0}else{if(S.mode==='fly'){S.auto=1;S.aT=S.t-10}}}
  };
 }
