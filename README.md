@@ -52,9 +52,9 @@ Nothing is presented as fact when it is not. Every claim carries one of three la
 | Ocean and Deep | The frontier under the surface | Undersea habitat, Submersible |
 | Materials and Nano | Matter, designed from the atom up | Graphene, Metamaterials |
 | Physics Frontier | Where known physics gets strange | Black hole, Time dilation, Warp drive |
-| Robotics | Machines that build, farm and walk | Robot farm, Giant mech |
+| Robotics | Machines that build, farm and walk | Robot farm, Giant mech, Microbot swarm |
 
-That makes 31 topics in total. Each sector has its own colour, which tints the star field and the interface while you are inside it.
+That makes 32 topics in total. Each sector has its own colour, which tints the star field and the interface while you are inside it.
 
 ---
 
@@ -64,13 +64,13 @@ That makes 31 topics in total. Each sector has its own colour, which tints the s
 - The intro animation, the swipeable home screen, the quick-jump chips and the sector pages.
 - The topic page and its registry. A topic file registers itself, and its sector page then opens it.
 - **Spaceship** (Spaceflight), the first topic and the template for the others. It has all four tabs.
-- **Submersible** (Ocean and Deep), the second topic, built in a different sector to prove the template carries over. It has all four tabs.
-- **Nanobots** (Life and Medicine), the third topic, at a scale where physics is very different from ours. It has all four tabs.
-- **Fusion reactor** (Energy), the fourth topic, a live 3D tokamak. Learn, World and Launch are built. The Fly model is written; its hookup in `register.js` is the last open step.
+- **Nanobots** (Life and Medicine), the second topic, at a scale where physics is very different from ours. It has all four tabs.
+- **Fusion reactor** (Energy), the third topic, a live 3D tokamak. It has all four tabs.
 - **Deployable tower** (Megastructures), the first structure topic, where the physics is loads, buckling and wind. It has all four tabs.
 - **Graphene** (Materials and Nano), a nanoindentation test that breaks a one-atom-thick drum with a diamond tip. It has all four tabs.
 - **Metamaterials** (Materials and Nano), a prism of copper rings and wires that bends a beam the wrong way. It has all four tabs.
 - **Orbital data center** (Computing and AI), a megawatt-class compute satellite in a dawn-dusk orbit, where cooling rather than power is the limit. It has all four tabs.
+- **Microbot swarm** (Robotics), slender ball-jointed magnetic bots that flow out of a pile and grow sculptures, and an honest account of why nothing yet shows those sculptures would hold. It has all four tabs. Learn and World show a single bot.
 - The home carousel with its "More ideas" row, and the search bar on the sector page.
 
 **Coming soon**
@@ -111,30 +111,6 @@ The ship runs on live physics. You choose what to do and the numbers follow.
 - **The goal.** Stop inside Mars's sphere of influence (about 577,000 km) slower than about 385 m/s. Burn too long and you cannot stop. Flip too late and you fly past.
 
 **What the Fly model simplifies.** It is a straight line from Earth to a stationary Mars. It ignores the Sun's gravity, the gravity of both planets, and planetary motion, so a real trajectory would be curved. Planet sizes and distances on screen are compressed so they can be seen. The Learn tab says all of this to the visitor.
-
----
-
-## The Submersible topic
-
-A three-person research sub that dives to 6,000 m and comes back. Everything is BUILT-class technology, modelled on the Alvin class rather than copied from one vehicle.
-
-**Reference design**
-
-| | |
-|---|---|
-| Rated depth | 6,000 m (about 603 atm) |
-| Crew sphere | 2 m inside, 70 mm titanium, about 450 MPa wall stress at depth |
-| Net weight | 87 kg heavy to dive, 87 kg light to rise, by dropping two steel weights |
-| Dive speed | 0.58 m/s, where drag balances the net weight |
-| Battery | about 50 kWh, a full dive uses about half |
-
-**Learn tab:** 14 sections from pressure and the sphere to light, sound, life support, safety and the frontier.
-
-**World tab:** seven parts: crew sphere, syntactic foam, drop weights, thrusters, battery pods, lamps and cameras, and a manipulator arm.
-
-**Launch tab:** a 9-hour dive in 9 phases. Depth, pressure, speed, net weight, battery, water temperature, daylight, hull stress and ship link all come from the physics.
-
-**Fly tab:** you control Trim (a ballast pump), the drop weights and the lamps. Reach the seabed, drop the first weight to stop, trim to hover, survey for an hour, then drop the second weight and rise. Deep water is denser, so the sub gets lighter with depth and you must trim for it. The model simplifies: still water, vertical motion only, one drag area, a flat seabed and constant electrical loads.
 
 ---
 
@@ -191,7 +167,7 @@ A tokamak, the doughnut-shaped magnetic bottle that holds plasma hot enough to f
 
 **Learn tab:** 13 sections, from the idea and why fusion is hard, through the reaction, the Lawson test and the magnetic bottle, to heating, the neutron problem, breeding tritium, taking out the ash, superconducting magnets, safety and an honest status check.
 
-**World tab:** eight parts: plasma, vacuum vessel, blanket, divertor, toroidal field coils, central solenoid, poloidal field coils and heating systems. A wedge is cut away so you can see inside. White field lines wind round the doughnut with a safety factor q of about 3, and moving markers show the twist. The plasma glows with fusion power, the magnets glow with field, and the pull-apart slider separates every part.
+**World tab:** nine parts: plasma, vacuum vessel, blanket, divertor, toroidal field coils, central solenoid, poloidal field coils, heating systems and cryostat. The layout follows ITER's published sizes: a vessel 19.4 m across and 11.3 m tall with 45 ports, 18 rectangular D-shaped coils wedged together at the centre and standing on gravity supports, a 13 m solenoid, six poloidal rings from 8 m to 25 m across, 54 divertor cassettes shaped as a V with a dome, a blanket of 18 gapped sectors, and a faint 29 m cryostat round the lot. Faint shells never block a tap: a tap picks the solid part behind them, and the cryostat or vessel wall is selected only when nothing solid is under the finger. A wedge is cut away so you can see inside. White field lines wind round the doughnut with a safety factor q of about 3, and moving markers show the twist. The plasma glows with fusion power, the magnets glow with field, and the pull-apart slider separates every part.
 
 **Launch tab:** one full pulse in 9 phases: cooling the magnets, pumping out the air, charging the field coils, fuel and breakdown, current ramp-up, heating up, the burn, ramp-down, and afterglow and reset. Readouts: time, coil temperature, field, plasma current, plasma heat, density, heating in, fusion power, power gain Q and stored heat.
 
@@ -360,6 +336,76 @@ Every number on screen comes from `core.js`: solar flux and cell efficiency that
 
 ---
 
+## The Microbot swarm topic
+
+Slender magnetic bots flow out of a pile, crawl over each other and lock into sculptures: a hand, tendrils, a breaking wave, an arch, a twisted column and a tree. The reference bot (MK1) is a composite of published swarm and modular-robot work, not one device, and its shape follows a picture of a Fusion 360 model. Weight and the magnet law are real physics. Size, magnet recess, battery share, drive power and radio timing are design values.
+
+**How real it is**
+
+| Label | What |
+|---|---|
+| BUILT | Swarms that coordinate flat shapes (Kilobots, 1,024 robots). Modular self-reconfiguring robots at tens of units. Neodymium magnets, thin-film cells and tiny radios as parts |
+| PROPOSED | This bot, its walking ball joint, and the sculptures |
+| THEORETICAL | Bundles that lock well enough to hold the sculptures. A swarm of millions, as in Big Hero 6 |
+
+**Reference bot (PROPOSED)**
+
+| | |
+|---|---|
+| Shape | two tapered eight-sided segments on a ball joint, 6.8 mm long, 2 mm across the shoulders (3.4 : 1), end faces 1 mm, ball 1.44 mm |
+| Mass | about 32 mg |
+| Joint | shoulders touch at a fold of about 85°, works to 60° |
+| Magnets | ten neodymium discs: one behind each end face, four behind the long flats of each segment |
+| End bond | about 8.9 mN, 28 bots hanging |
+| Flank bond | about 2.2 mN, 7 bots, when two flats meet flush and their magnets line up |
+| One level chain | holds only about 2 bots |
+| Battery | thin-film, 30% of the volume, about 1.34 J, 80% usable, 7.5 hours idle |
+| Drive | 6 mW, 10 mm/s |
+| Radio | 50 µW idle, 0.1 s per hop |
+
+**From bots to shapes**
+
+- A shape is a few smooth curves, each with a thickness that can change along it.
+- Each curve is filled with strands: chains of bots joined end to end and bending at their balls.
+- Strands sit 1.667 mm apart on a square grid, with every second one slid 1.6 mm along. This saves about 31% of the cross-section.
+- The structure check covers bending on the end bonds, squeeze, tipping, sliding (including arch feet) and the joint bend limit. It is first-order statics.
+
+**The open problem.** The sculptures pass the check only if the strands in a bundle grip each other and bend as one beam. At the packed spacing the flank magnets miss each other and pull only about 0.38 mN per bot toward a neighbour (a rough estimate). If every strand bends alone, all six shapes fail at size 1 and larger. The tendrils at 1.5 times would need 476% of the bond limit, against 19% when locked.
+
+**Learn tab:** 17 sections, from the idea and the reference bot to magnets, chains, bundles, the open problem, how the swarm flows, the structure check, power, heat, scale, radio, a swarm of millions and an honest status check.
+
+**World tab:** one bot only. Six parts: tapered segments, ball joint and drive, magnets, battery, radio and brain, and structure analysis (dimension lines). Selecting the joint folds the bot to its limit. Selecting an inside part, or pulling apart, turns the segments see-through.
+
+**Launch tab:** 6 phases: pile, trunk rises, tendrils reach (4,194 bots), stand and check, let go and flow back, and reshape into a hand (2,817 bots). The same pile of bots makes both.
+
+**Fly tab:** you command the swarm.
+- **Shape.** Cycles the six sculptures, then any added with `T.addForm`.
+- **Size.** 0.7, 1, 1.5, 2 and 3 times. Sizes that would be far above 45,000 bots are skipped.
+- **Lanes.** 4, 16, 64 or 256 walking lanes. More lanes build faster, but more bots walk at once, which makes heat.
+- **Strands.** Locked or loose bundles in the structure check.
+- **Release.** The swarm lets go from the tips and flows back to the pile.
+- **Drive slider.** How hard the swarm walks. Slower is cooler, but waiting bots keep draining.
+- **Limits.** 40 K above the room, and 80% of any battery.
+- **Time warp.** 1×, 5×, 20×, 2 min/s and 10 min/s. It starts at 20×.
+- **Auto.** Eases the drive off as the swarm warms.
+- **What to try.** The arch at 2 times with 256 lanes overheats. The same arch with 4 lanes and the drive at 15% runs out of battery. The wave at 3 times slides apart. Loose strands hold a hand at 0.7 times but not at 1.
+
+**Adding a shape** takes one call in `forming.js`:
+
+```js
+T.addForm('horn','Horn',k=>[
+ T.stroke([[0,0,0],[0,0,20*k],[10*k,0,40*k]],10*k,2*k)
+]);
+```
+
+A stroke is a list of control points in millimetres (z up), then the radius at the start and at the end. A branch takes `{on:index}` naming the stroke it grows from, and an arch with both feet on the floor takes `{arch:true}`. It appears under the Fly tab's Shape button on its own.
+
+**What the model simplifies:** the build order is worked out in advance rather than by each bot's local rules, walking paths are simplified and bots can pass through each other, magnet forces are a two-dipole estimate, bots that overlap where curves join are dropped, and there are no radio collisions, crowding or failed bots.
+
+**Related topics:** Nanobots (Life and Medicine) and Metamaterials (Materials and Nano).
+
+---
+
 ## Project structure
 
 Howverse is plain HTML, CSS and JavaScript with no build step. It runs on any static host. Vue 3, Vue Router and three.js load from a CDN.
@@ -382,12 +428,12 @@ js/
   ui/topic.js           the topic page and its tabs, and the on-demand topic loader
   topics/<sector>/      one folder per sector, one file per topic
     flight/spaceship.js
-    deep/submersible.js
     life/nanobots/
     mega/deployable-tower/
     nano/graphene/
     nano/metamaterials/
     mind/orbital-data-center/
+    bots/microbot-swarm/
     energy/fusion-reactor/
       index.js          the manifest: the list of files, in load order
       core.js           shared constants and helpers
@@ -399,7 +445,7 @@ js/
       register.js       registers the topic, loaded last
 ```
 
-Nanobots, Deployable tower, Graphene, Metamaterials and Orbital data center use the same multi-file layout as Fusion reactor. One 3D renderer stays alive across all pages. This keeps the app light, which matters because it is built and used on phones.
+Nanobots, Deployable tower, Graphene, Metamaterials, Orbital data center and Microbot swarm use the same multi-file layout as Fusion reactor. One 3D renderer stays alive across all pages. This keeps the app light, which matters because it is built and used on phones.
 
 ---
 
@@ -423,7 +469,7 @@ HV.topics.spaceship = {
 - **The 3D model's `update`** is called as `update(dt, time, o)`, where `o` carries `state` (the Launch or Fly readings), `tab`, `explode` (the pull-apart slider, 0 to 1) and `sel` (the selected part). A model that takes a different signature will not respond to the slider, the selection or the mission.
 - **The Fly tab** appears on its own when a topic provides `fly`. A flight model can bring its own controls: `ui` (slider label and range, button list), `warp` and `warpL` (time-warp steps) and `dtmax` (largest physics step). Without them the spaceship controls are shown. A button in `ui.btns` can carry its own label (`lf`, a function) and its own pressed state (`on`, a function). The keys the page knows are `flip`, `cut`, `warp`, `auto`, `reset`, `drop`, `lamps`, `evac`, `lock` and `damper`. A new key needs one entry in `act` in `ui/topic.js` that calls the matching method on the flight model.
 - **Reserved state keys.** The topic page reads `n` (phase name) and `f` (phase text) from every Launch and Fly state, so a physics model must never return its own values under those two names. Metamaterials returns `fr` for frequency and `nc` for the complex index for this reason.
-- **Reusing page keys.** A flight model can borrow a known key for a different job and give it its own label with `lf`. Graphene uses `lamps` for the tip change and `cut` for Retract. Metamaterials uses `lamps` for the medium swap and `drop` for Record. This needs no change to `ui/topic.js`.
+- **Reusing page keys.** A flight model can borrow a known key for a different job and give it its own label with `lf`. Graphene uses `lamps` for the tip change and `cut` for Retract. Metamaterials uses `lamps` for the medium swap and `drop` for Record. Fusion reactor uses `drop` for Fuel + and `lamps` for Fuel −. Do not borrow `cut`: the page maps it to the heating slider, not to the model. This needs no change to `ui/topic.js`.
 - **Time-warp list length.** The page starts on warp step 3 (index 2), so a flight model's `warp` list needs at least three entries.
 - **File order matters.** If one file uses helpers from another, the manifest must list the provider first. In Fusion reactor, `mission.js` comes before `fly.js`.
 - Each topic is self-contained, so topics can be built one at a time, in any order, with any tool.
@@ -452,13 +498,14 @@ Upload the whole folder to a static host such as Vercel. The app loads its libra
 
 1. ~~Build the Spaceship topic as the reference template.~~ Done.
 2. ~~Add a registry so each topic file registers itself and opens from its sector page.~~ Done.
-3. ~~Build a second topic, **Submersible**, in a different sector to prove the template carries over.~~ Done.
+3. Build **Submersible** (Ocean and Deep), a topic in a different sector to prove the template carries over.
 4. ~~Build a third topic, **Nanobots**, at a scale where the physics is very different.~~ Done.
-5. Finish **Fusion reactor**: hook the Fly model into `register.js` and confirm all four tabs run.
+5. ~~Finish **Fusion reactor**: hook the Fly model into `register.js` and confirm all four tabs run.~~ Done. The Auto plan now holds the full 400 s burn.
 6. ~~Build **Deployable tower** (Megastructures): a tall structure that telescopes itself down and opens up again. It is the first structure topic, where the physics is loads, buckling and wind rather than fuel or flow.~~ Done.
 7. ~~Add the home carousel, the "More ideas" row and the sector search bar.~~ Done.
 8. ~~Build the Materials and Nano sector: **Graphene** and **Metamaterials**.~~ Done.
 8a. ~~Build **Orbital data center**, the first Computing and AI topic.~~ Done.
+8b. ~~Build **Microbot swarm** (Robotics): slender ball-jointed magnetic bots that grow free-form sculptures from strands.~~ Done. Open: make the strands in a bundle grip each other.
 9. Build **Rocket and capsule**, and move the code the topics share (formatters, the 3D scaffolding) into one place.
 10. Build one flagship topic per sector, so all eleven feel alive.
 11. Fill in the remaining topics.
