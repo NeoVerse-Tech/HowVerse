@@ -25,12 +25,12 @@ HV.SECTORS=[
   ideas:['Aerogel','Carbon nanotube','Quantum dots','Self-healing material','Superconductor','Shape-memory alloy']},
  {id:'phys',n:'Physics Frontier',i:'🕳️',c:'#ff5d7a',t:'Where known physics gets strange.',tp:[['Black hole','Light bent and trapped'],['Time dilation','Clocks that disagree'],['Warp drive','A bubble in spacetime']],
   ideas:['Wormhole','Antimatter','Dark matter','Gravitational waves','Neutron star']},
- {id:'bots',n:'Robotics',i:'🤖',c:'#c0c8d8',t:'Machines that build, farm and walk.',tp:[['Robot farm','Fields without farmers'],['Giant mech','Walking at skyscraper size']],
+ {id:'bots',n:'Robotics',i:'🤖',c:'#c0c8d8',t:'Machines that build, farm and walk.',tp:[['Robot farm','Fields without farmers'],['Giant mech','Walking at skyscraper size'],['Microbot swarm','Slender magnetic bots forming shapes']],
   ideas:['Surgical robot','Swarm drones','Exoskeleton','Humanoid worker','Underwater crawler']}
 ];
 
 /* topics that have a built file; they open from the sector page and load on demand */
-HV.BUILT=['spaceship','nanobots','fusion-reactor','deployable-tower','dyson-swarm','graphene','metamaterials','orbital-data-center'];
+HV.BUILT=['spaceship','nanobots','fusion-reactor','deployable-tower','dyson-swarm','graphene','metamaterials','orbital-data-center','microbot-swarm'];
 
 /* the one rule for 'is this topic built'. Home, sector page and loader all use it. */
 HV.isLive=x=>HV.BUILT.indexOf(x[0].toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''))>=0;
