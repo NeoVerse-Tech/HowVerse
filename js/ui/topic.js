@@ -143,7 +143,7 @@ const TopicView={
     /* run the flight model in small sim steps so fast time warp stays accurate */
     let left=dt*WV[wi.value],n=0;
     while(left>1e-9&&fs.state.mode==='fly'&&n<400){const h=Math.min(left,fs.dtmax||120);fs.step(h);left-=h;n++}
-    fs.tick(dt);
+    if(fs.tick)fs.tick(dt);
     if(fs.state.auto||fs.state.mode!=='fly')thr.value=Math.round(fs.state.th*100);
     auto.value=!!fs.state.auto;
     if(slow){fg.value=fs.read();fl.value=fs.status()}
